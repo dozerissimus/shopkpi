@@ -1,0 +1,231 @@
+<?php
+
+
+/**
+ * Реализация hook_menu().
+ */
+function addviewfilters_menu()
+{
+    $items['ajax'] = array(
+	'page callback' => 'put_data',
+	'access callback' => TRUE,
+	'type' => MENU_CALLBACK,
+    );
+    return $items;
+}
+
+function put_data()
+{
+    global $language;
+
+    if (isset($_POST['args']))
+    {
+	if ($_POST['args'])
+	{
+            $args = '';
+            $url = $_POST['args'];	
+            $url = explode(',', $url);
+		
+            foreach($url as $url_and)
+            {
+		$query = "SELECT tbl_node.nid AS nid
+			FROM tbl_node
+			LEFT JOIN tbl_taxonomy_index ON tbl_node.nid = tbl_taxonomy_index.nid
+			WHERE (tbl_taxonomy_index.tid IN ";
+            	$args_or = '';
+		$query .= '(';
+		$url_and_arr = explode('+', $url_and);
+		foreach($url_and_arr as $url_or)
+		{
+                    $query .= "'$url_or', ";
+		}
+		$query = substr($query, 0, -2);
+		$query .= ')';
+		$query .= " AND (tbl_node.status = '1') AND (tbl_node.language = '".$language->language."'))";
+		$res = db_query($query);
+		foreach($res as $row)
+                    $args_or[] = $row->nid;
+		$args[] = $args_or;
+            }
+			
+            if(count($args))
+            {
+		$arguments = $args[0];
+		foreach($args as $arr)
+                    $arguments = array_intersect($arguments, $arr);
+            }
+            $str_args = '';
+            foreach($arguments as $args)
+		$str_args .= $args.'+';
+            $str_args = substr($str_args, 0, -1);
+			
+            $data = views_embed_view('filter_view', 'default', $str_args);
+	}
+	else
+            $data = views_embed_view('products', 'page', $_SESSION['tid']);
+	drupal_json_output($data);
+    }
+}
+
+/**
+ * Реализация hook_block_info()
+ */
+function addviewfilters_block_info() 
+{
+    $blocks['addviewfilters_form_block'] = array(
+	'info' => t('Блок вывода формы изменения фильтров товаров'),
+    ); 
+    return $blocks;
+}
+
+/**
+ * Реализация hook_block_view()
+ */
+function addviewfilters_block_view($delta = false) 
+{
+    $block = array();
+    switch ($delta) 
+    {
+	case 'addviewfilters_form_block':
+	{
+            $block['content'] = add_filters_content();
+            break;
+	}
+    }
+    return $block;
+}
+
+function add_filters_content()
+{
+    global $language;
+    $flag = false;
+    $flag_price = false;
+	
+    $str = '<div id="filters">';
+	
+    if ((arg(0) != 'user'))
+    {
+	if (arg(0) == 'taxonomy')
+    	{
+            $term_id = arg(2);
+            $_SESSION['tid'] = $term_id;
+	}
+	else 
+            if (isset($_SESSION['tid']))
+                $term_id = $_SESSION['tid'];
+        if (isset($term_id))
+            $term = taxonomy_term_load($term_id);
+	//debug($term);
+	if (isset($term->field_type['und']))
+	{
+            $term_type = $term->field_type['und'][0]['value'];
+            $allvoc = taxonomy_get_vocabularies();
+            $i = 0;
+            foreach ($allvoc as $voc)
+            {
+		if (strpos($voc->machine_name, $term_type)!== false)
+		{
+                    $flag = true;
+                    $i++;
+                    $opt_obj_arr = taxonomy_get_tree($voc->vid);
+                    if ($language->language == 'uk')
+                        $title = preg_split('/:/', $voc->name);
+                    else
+			$title = preg_split('/:/', $voc->description);
+                    $str .= '<p>'.array_pop($title).'</p>';
+                    $str .= '<ul id="ul'.$i.'">';
+                    foreach ($opt_obj_arr as $opt_obj)
+                    {
+                        if ($language->language == 'uk')
+                            $label = $opt_obj->name;
+			else
+                            $label = $opt_obj->description;
+				
+                            $str .= '<li><input type="checkbox" id="term'.$opt_obj->tid.'">
+				<label  class="option" for="term'.$opt_obj->tid.'">'.$label.'</label>
+				</li>';
+                    }
+                    $str .= '</ul>';
+		}
+            }
+            $minprice = db_query("SELECT min(tbl_uc_products.sell_price) FROM tbl_uc_products, tbl_node 
+				WHERE tbl_uc_products.nid = tbl_node.nid AND tbl_node.type = 'product_$term_type' AND tbl_node.language = '$language->language'")->fetchField();
+            $maxprice = db_query("SELECT max(tbl_uc_products.sell_price) FROM tbl_uc_products, tbl_node 
+				WHERE tbl_uc_products.nid = tbl_node.nid AND tbl_node.type = 'product_$term_type' AND tbl_node.language = '$language->language'")->fetchField();
+            variable_set('minprice', $minprice);
+            variable_set('maxprice', $maxprice);
+	}
+    }
+	//debug($flag);
+    if ($flag)
+	$str .= '<input type="hidden" id="filters_isset" value="1">';
+    else
+	$str .= '<input type="hidden" id="filters_isset" value="0">';
+    $str .= '</div>';
+	
+    return $str;
+}
+
+/*function addviewfilters_form($form, &$form_state) 
+{
+	//прочитать фильтры и забить их в форму
+	/*if (arg(0) == 'taxonomy')
+	{
+		$term_id = arg(2);
+		$_SESSION['tid'] = $term_id;
+	}
+	else if (arg(0) == 'test')
+		$term_id = $_SESSION['tid'];
+	else
+		return $form;
+		
+	$term_id = arg(2);
+	$_SESSION['tid'] = $term_id;
+	
+	$term = taxonomy_term_load($term_id);
+	if (isset($term->field_type['und']))
+	{
+		$term_type = $term->field_type['und'][0]['value'];
+		$allvoc = taxonomy_get_vocabularies();
+		$i = 0;
+		foreach ($allvoc as $voc)
+		{
+			if (strpos($voc->machine_name, $term_type)!== false)
+			{
+				$opt = false;
+				$i++;
+				//print $voc->machine_name;//Добрались до словарей с фильтрами
+				$opt_obj_arr = taxonomy_get_tree($voc->vid);
+				$form['filter'.$i] = array(
+						'#type' => 'item',
+						'#title' => t($voc->name),
+				);
+				foreach ($opt_obj_arr as $opt_obj)
+				{
+					$form['term'.$opt_obj->tid] = array(
+							'#type' => 'checkbox',
+							'#title' => t($opt_obj->name),
+					);
+				}
+			}
+		}
+	}
+	return $form;
+}*/
+
+/**
+ * Реализация hook_js_alter()
+ */
+function addviewfilters_js_alter(&$javascript)
+{
+    $minprice = variable_get('minprice');
+    $maxprice = variable_get('maxprice');
+    foreach ($javascript['settings']['data'] as $key => $value)
+    {
+	if (array_key_exists('better_exposed_filters', $value))
+	{
+            $javascript['settings']['data'][$key]['better_exposed_filters']['slider_options']['sell_price']['min'] = $minprice;
+            $javascript['settings']['data'][$key]['better_exposed_filters']['slider_options']['sell_price']['max'] = $maxprice;
+	}
+    }
+}

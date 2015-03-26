@@ -1,0 +1,10 @@
+name = Valuta
+description = Установка привязки к курсу валюты
+core = 7.x
+version = 7.x-1.0
+package = Custom
+dependencies[] = variable
+dependencies[] = uc_store
+
+
+

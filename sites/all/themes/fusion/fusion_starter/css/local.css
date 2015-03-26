@@ -1,0 +1,504 @@
+
+/****************************/
+/* LOCAL CSS                */
+/****************************/
+
+/* Put your custom CSS and CSS overrides in this file and  */
+/* rename it local.css.  By restricting your CSS changes   */
+/* to local.css, your changes will not be overwritten when */
+/* upgrading to a new version of this theme.  You can also */
+/* use a local-rtl.css file for the equivalent in RTL.     */
+
+/* Steps to activate local.css:                       */
+/* 1. Add your custom CSS to this file                */
+/* 2. Rename this file to local.css                   */
+/* 3. Clear cached data at admin/settings/performance */
+
+body
+{
+	background-color: #EBEBEB;
+}
+
+.cart{
+
+	margin-right: 50px;
+	height: 30px;
+	vertical-align: middle;
+}
+
+.search
+{
+	height: 30px;
+	margin-top: 20px;
+	float: right;
+}
+
+
+
+.node-teaser
+{
+	padding: 10px;
+	max-width: 280px;
+	height: 500px;
+	margin-right: 0;
+	background: white;
+	border-radius: 5px;
+	
+}
+
+.node-teaser:hover
+	{
+		box-shadow: 0 0 15px 10px #A9A9AB;
+		border-radius: 5px;
+	}
+	
+	
+.price
+{
+	float: right;
+	font-size: 24px;
+	color: red;
+	margin: 10px;
+}
+
+.col-1
+{
+	vertical-align: top;
+	width: 33%;
+}
+
+.col-2
+{
+	vertical-align: top;
+	width: 33%;
+}
+
+.col-3
+{
+	vertical-align: top;
+	width: 33%;
+}
+
+#preface-top
+{
+	background-color: #EBEBEB;
+	margin: 0px 5px 20px 5px;
+	height: 80px;
+	/*background: -moz-linear-gradient(top, #fff, #D3C9C0, #fff);
+	background: -webkit-linear-gradient(top, #fff, #D3C9C0, #fff);
+	background: -ms-linear-gradient(top, #fff, #D3C9C0, #fff);
+	background: -o-linear-gradient(top, #fff, #D3C9C0, #fff);*/	
+}
+
+#header-group
+{
+	background-color: #EDEDED;
+	margin: 0px 5px 0px 5px;
+	height: 40px;
+	vertical-align: middle;
+	border-radius: 10x;
+	padding-top: 10px;
+}
+
+.block_login
+{
+	//border: solid 1px black;
+	margin-top: -20px;
+	float: right;
+}
+
+#header-group ul {list-style: none; margin: 0; padding: 0}
+#header-group li {display: inline}
+
+#block-taxonomy-menu-block-1 h2
+{
+	background-color: #fff;
+	height: 30px;
+	border-radius: 5px;
+	padding: 5px;
+	//margin-bottom: -10px;
+	/*background: -moz-linear-gradient(top, #FEBA22, #f00, #FEBA22);
+	background: -webkit-linear-gradient(top, #FEBA22, #f00, #FEBA22);
+	background: -ms-linear-gradient(top, #FEBA22, #f00, #FEBA22);
+	background: -o-linear-gradient(top, #FEBA22, #f00, #FEBA22);	*/
+	vertical-align: middle;
+	
+}
+
+#block-taxonomy-menu-block-1 .inner
+{
+	box-shadow: 0 0 15px 10px #EDEDED;
+}
+
+#block-taxonomy-menu-block-1 ul
+{
+	margin: 0;
+}
+
+#filters p, li
+{
+	text-align: left;
+}
+
+#filters p
+{
+	background: -moz-linear-gradient(top, #FFFBBC, #FEBC65, #FFFBBC);
+	background: -webkit-linear-gradient(top, #FFFBBC, #FEBC65, #FFFBBC);
+	background: -ms-linear-gradient(top, #FFFBBC, #FEBC65, #FFFBBC);
+	background: -o-linear-gradient(top, #FFFBBC, #FEBC65, #FFFBBC);	
+	//background-color: #FFFBBC;
+	margin: 0;
+	padding: 10px;
+	border-top: solid 2px #FFFBBC;
+	//cursor: pointer;
+	//box-shadow: 0 0 15px 10px #EDEDED;
+
+}
+
+#filters ul
+{
+	padding-top: 10px;
+	list-style: none;
+}
+
+#filters
+{
+	box-shadow: 0 0 15px 10px #EDEDED;
+}
+
+.teaser-img
+{
+	clear: both;
+	text-align: center;
+}
+
+.favorite img:hover
+{
+	background-image: url(/sites/default/files/source/favorite_hover.png);
+}
+
+.favorite-teaser
+{
+	display: block;
+	position: absolute;
+	margin-top: 20px;
+	float: right;
+	text-align: right;
+	left: 51%;
+	top: 450px;
+}
+
+.compare-teaser
+{
+	display: block;
+	position: absolute;
+	margin-top: 20px;
+	//float: left;
+	top: 450px;
+}
+
+.views_slideshow_cycle_main img
+{
+	width: 100%;
+}
+
+.userbar
+{
+	float: right;
+	//margin-right: 30px;
+	text-align: center;
+	vertical-align: middle;
+	width: 90px;
+	cursor: pointer;
+	text-decoration: none;
+}
+
+.userbar-table
+{
+	margin-top: -5px;
+}
+
+.userbar img
+{
+	height: 30px;
+}
+
+.views-field
+{
+	text-align: center;
+	//border: black 1px solid;
+}
+
+.block-views 
+{
+	box-shadow: 0 0 15px 10px #EDEDED;
+	border-radius: 5px;
+}
+
+.section
+{
+	margin-top: 20px;
+	clear: both;
+	//border: 1px solid black;
+	//border-radius: 15px;
+}
+
+.mytabs li
+{
+	margin-top: 50px;
+	margin-right: 27px;
+	margin-left: -26px;
+	cursor: pointer;
+	list-style: none;
+	display: inline;
+	float: left;
+	height: 30px;
+	padding-right: 30px;
+	padding-left: 30px;
+	text-align: center;
+	background-color: #FEBA22;
+	border-radius: 10px 10px 0 0;
+	//border: 1px solid black;
+	font-weight: bold;
+}
+
+.mytabs li:hover
+{
+	//background-color: #F8F3DE;
+	background: -moz-linear-gradient(top, #f00, #FEBA22);
+	background: -webkit-linear-gradient(top, #f00, #FEBA22);
+	background: -ms-linear-gradient(top, #f00, #FEBA22);
+	background: -o-linear-gradient(top, #f00, #FEBA22);	
+}
+
+.mytabs .current
+{
+	//background-color: #F8F3DE;
+	background: -moz-linear-gradient(top, #FEBE68, #FFFBBC);
+	background: -webkit-linear-gradient(top, #FEBE68, #FFFBBC);
+	background: -ms-linear-gradient(top, #FEBE68, #FFFBBC);
+	background: -o-linear-gradient(top, #FEBE68, #FFFBBC);	
+}
+
+.box 
+{  
+	padding: 10px;
+	margin-top: 10px;
+	display: none; 
+	//background-color: #F8F3DE; 
+	clear: both;
+	background: -moz-linear-gradient(top, #FFFBBC, #FEBE68);
+	background: -webkit-linear-gradient(top, #FFFBBC, #FEBE68);
+	background: -ms-linear-gradient(top, #FFFBBC, #FEBE68);
+	background: -o-linear-gradient(top, #FFFBBC, #FEBE68);	
+}  
+
+.box.visible 
+{  
+	display: block;
+	
+}  
+
+.display-price
+{
+	color: red;
+}
+
+/*.node-add-to-cart
+{
+	height: 30px;
+	//display: block;
+	//position: absolute;
+	//left: 300px;
+	//top: 0px;
+}*/
+
+.compare-title
+{
+	font-weight: bold;
+	margin-bottom: 20px;
+}
+
+.compare-price
+{
+	font-weight: bold;
+	color: red;
+	font-size: 16px;
+}
+
+.compare-body
+{
+	text-align: justify;
+	margin: 20px;
+}
+
+.soc-icon
+{
+    display:block;
+    float:left;
+    opacity:0.8;
+    margin:2px;
+}
+
+.soc-icon:hover 
+{
+    opacity:1;
+}
+
+.cols-5 td
+{
+	width: 20%;
+}
+
+#edit-sell-price-min
+{
+	display: block;
+	//width: 40%;
+	//border: 1px solid black;
+	float: left;
+}
+
+#edit-sell-price-max
+{
+	display: block;
+	//width: 40%;
+	//border: 1px solid black;
+	float: right;
+	clear: both;
+}
+
+#edit-sell-price-wrapper
+{
+	width: 100%;
+}
+
+#block-views-exp-products-page
+{
+	//padding-right: -20px;
+	//margin: -10px;
+	left: 10px;
+	width: 95%;
+}
+
+.views-exposed-widgets
+{
+}
+
+.ui-slider
+{
+	float: left;
+	margin-top: 50px;
+	width: 100%;
+}
+
+.views-exposed-form label
+{
+	text-align: center;
+	font-weight: bold;
+	font-size: 1.2em;
+	margin-bottom: 20px;
+}
+
+.form-item-sell-price-min
+{
+	width: 40%;
+}
+
+.form-item-sell-price-max
+{
+	width: 40%;
+	float: right;
+}
+
+/*.discount
+{
+	text-align: center;
+	font-size: 1.3em;
+	margin-bottom: 10px;
+}*/
+
+.price, .discount_price
+{
+	font-size: 1.5em;
+	margin: 0 20px 0 20px;
+	color: red;
+	float: right;
+	//height: 300px;
+}
+
+.old_price
+{
+	//font-size: 1em;
+	margin: 0 20px 0 20px;
+	//color: red;
+	float: right;
+	//height: 300px;
+	text-decoration: line-through;
+}
+
+.discount_text
+{
+	float: left;
+	font-size: 1.5em;
+	-webkit-animation: blink 1s linear infinite; 
+	animation: blink 1s linear infinite;
+}
+
+@-webkit-keyframes blink 
+{ 
+	50% { color: rgb(34, 34, 34); } 
+	51% { color: rgba(34, 34, 34, 0); } 
+	100% { color: rgba(34, 34, 34, 0); } 
+} 
+@keyframes blink 
+{ 
+	50% { color: rgb(34, 34, 34); } 
+	51% { color: rgba(34, 34, 34, 0); } 
+	100% { color: rgba(34, 34, 34, 0); } 
+}
+
+.menu_vert
+{
+	background-color: #fff;
+}
+
+#block-system-main-menu
+{
+	vertical-align: middle;
+}
+
+#edit-search-block-form--2
+{
+	height: 30px;
+	width: 85%;
+}
+
+#edit-submit
+{
+	height: 40px;
+	width: 100px;
+}
+
+#search-block-form
+{
+	margin-top: -30px;
+}
+
+#block-system-main-menu
+{
+	margin-top: 10px;
+}
+
+#logo
+{
+    //text-align: center;
+    //margin: 0 auto;
+    width: 300px;
+}
+
+#logo img
+{
+    margin-top: 40px;
+    margin-bottom: -50px;
+    width: 100%;
+}

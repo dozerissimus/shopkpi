@@ -1,0 +1,13 @@
+name =  Product Price Alterer Field
+description = Defines CCK-based field for altering product price based on applicable discounts from uc_discounts_alt module.
+dependencies[] = uc_discounts
+dependencies[] = content
+package = CCK
+core = 6.x
+
+; Information added by Drupal.org packaging script on 2015-02-13
+version = "7.x-2.0-alpha2"
+core = "7.x"
+project = "uc_discounts_alt"
+datestamp = "1423807687"
+

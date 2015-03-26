@@ -1,0 +1,34 @@
+#discount-subtotal-title, #discount-amount-title {
+  font-weight: bold;
+}
+
+table.uc-discounts td.date,
+table.uc-discounts td.operations {
+  white-space: nowrap;
+}
+
+table.uc-discounts td.operations a {
+  padding-right: 5px;
+}
+
+table.uc-discounts td.numeric {
+  text-align: center;
+}
+
+table.uc-discounts td.is_inactive,
+table.uc-discounts td.is_active {
+  text-align: center;
+  font-weight: bold;
+  color: green;
+}
+
+table.uc-discounts td.is_inactive {
+  color: red;
+}
+
+code.uc-discounts-generated-codes {
+  display: block;
+  background: #eee;
+  border: 1px solid #333;
+  white-space: pre;
+}

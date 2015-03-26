@@ -1,0 +1,107 @@
+<?php
+
+/*function addviewfilters_menu()
+{
+	
+	$items['ajax'] = array(
+		'page callback' => 'put_data',
+		'access callback' => TRUE,
+		'type' => MENU_CALLBACK,
+	);
+	return $items;
+}
+
+function put_data()
+{
+	/*if (isset($_POST['args']))
+	{
+		if ($_POST['args'])
+			$data = views_embed_view('products', 'page', $_POST['args']);
+		else
+			$data = views_embed_view('products', 'page', $_SESSION['tid']);
+		print $data;
+		//drupal_json_output($data);
+	}
+}*/
+/*
+function addviewfilters_block_info() 
+{
+	$blocks = array();
+	$blocks['addviewfilters_form_block'] = array(
+		'info' => t('Блок вывода формы изменения фильтров товаров'),
+	); 
+	return $blocks;
+}
+
+function addviewfilters_block_view($delta = false) 
+{
+	$blocks = false;
+	if ($delta == 'custom_form_block') 
+	{
+		$blocks['subject'] = t('Критерии поиска');
+		$blocks['content'] = drupal_get_form('addviewfilters_form');
+	}
+	return $blocks;
+}
+
+function addviewfilters_form($form, &$form_state) 
+{	
+	//прочитать фильтры и забить их в форму
+	/*if (arg(0) == 'taxonomy')
+	{
+		$term_id = arg(2);
+		$_SESSION['tid'] = $term_id;
+	}
+	else if (arg(0) == 'test')
+		$term_id = $_SESSION['tid'];
+	else
+		return $form;*/
+	//debug($_POST['args']);
+/*	$term_id = arg(2);
+	
+	$term = taxonomy_term_load($term_id);
+	if (isset($term->field_type['und']))
+	{
+		$term_type = $term->field_type['und'][0]['value'];
+		$allvoc = taxonomy_get_vocabularies();
+		$i = 0;
+		foreach ($allvoc as $voc)
+		{
+			if (strpos($voc->machine_name, $term_type)!== false)
+			{
+				$opt = false;
+				$i++;
+				//print $voc->machine_name;//Добрались до словарей с фильтрами
+				$opt_obj_arr = taxonomy_get_tree($voc->vid);
+				$form['filter'.$i] = array(
+						'#type' => 'item',
+						'#title' => t($voc->name),
+				);
+				foreach ($opt_obj_arr as $opt_obj)
+				{
+					$form['term'.$opt_obj->tid] = array(
+							'#type' => 'checkbox',
+							'#title' => t($opt_obj->name),
+					);
+				}
+				/*$opt[] = $opt_obj->name;
+				$form['filter'.$i] = array(
+				'#type' => 'checkboxes',
+				'#options' => drupal_map_assoc($opt),
+				'#title' => t($voc->name),
+				'#attributes' => array('id' => 'term'.$opt_obj->tid),
+			);*/
+/*			
+			}
+		}
+	}
+	return $form;
+}
+
+function addviewfilters_form_submit($form, &$form_state) 
+{
+}*/
+
+
+
+

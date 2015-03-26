@@ -1,0 +1,174 @@
+<?php
+/**
+ * Implements hook_menu().
+ */
+function akcii_menu()
+{
+	$items['admin/store/akcii'] = array(
+		'title' => 'Акции и распродажи',
+		'description' => 'Акции и распродажи',
+		'position' => -5,
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array('akcii_list_form'),
+		'access callback' => 'user_access',
+		'access arguments' => array('administer flags'),
+		'type' => MENU_NORMAL_ITEM,
+	);
+	$items['admin/store/akcii/add'] = array(
+		'title' => 'Добавить новую акцию',
+		'description' => 'Добавить новую акцию',
+		'position' => -5,
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array('akcii_add_form'),
+		'access callback' => 'user_access',
+		'access arguments' => array('administer flags'),
+		'type' => MENU_NORMAL_ITEM,
+	);
+	/*$items['admin/store/akcii/%flag/delete'] = array(
+		'title' => 'Delete flag',
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array('flag_delete_confirm'),
+		'access callback' => 'user_access',
+		'access arguments' => array('administer flags'),
+		'file' => 'includes/flag.admin.inc',
+		'type' => MENU_CALLBACK,
+	);*/
+	return $items;
+}
+
+function akcii_list_form($form, &$form_state) 
+{
+	$form = array();
+	//$str = '';
+	//$akcii = array();
+	
+	/*$form['header'] = array(
+		'#type' => 'value',
+		'#value' => array(
+			//theme('table_select_header_cell'),
+			'Акция',
+			'Размер скидки',
+			'Дата окончания',
+			'Текст акции',
+		),
+	); */
+	
+	$flags = flag_get_flags();
+	foreach ($flags as $flag)
+	{
+		if (strpos($flag->name, 'akcii') !== false)
+		{
+			//debug($flag->expire_date);
+			/*$ops = array(
+				'flags_edit' => array('title' => t('edit'), 'href' => '/admin/store/akcii/'.$flag->name.'/edit'),
+				'flags_delete' => array('title' => t('delete'), 'href' => '/admin/store/akcii/'.$flag->name.'/delete'),
+			);*/
+			//variable_set($flag->name, '50%');
+			$form[$flag->name.'title'] = array(
+				'#type' => 'item',
+				'#markup' => $flag->title,
+			);
+			$form['flag'][$flag->name] = array(
+				'#type' => 'hidden',
+				'#value' => $flag->name,
+			);
+			$form[$flag->name.'value'] = array(
+				'#type' => 'textfield',
+				'#default_value' => variable_get($flag->name),
+			);
+			$form[$flag->name.'expired'] = array(
+				'#type' => 'item',
+				'#markup' => $flag->expire_date,
+			);
+			$form[$flag->name.'discount_text'] = array(
+				'#type' => 'textfield',
+				'#default_value' => variable_get($flag->name.'_text'),
+			);
+			//$form['flags'][] = $flag->name;
+
+			/*$akcii[] = $flag;
+			$rows[] = array(
+				$flag->title,
+				variable_get($flag->name),
+				theme('links', array('links' => $ops)),
+			);*/
+			//theme();
+		}
+		
+	}
+/*	if (!empty($rows)) 
+	{
+		$header = array(
+			t('Акції'),
+			t('Value'),
+			t('Operations'),
+		);
+		$str .= theme('table', array('header' => $header, 'rows' => $rows));
+	}*/
+	$form['submit'] = array(
+		'#type' => 'submit',
+		'#value' => t('Save'),
+	);
+	$form['#theme'] = 'akcii_list_form_theme_function';
+	
+	return $form;
+}
+
+function akcii_theme($existing, $type, $theme, $path)
+{
+  debug('gggg');
+  return array(
+    'akcii_list_form_theme_function' => array(
+      'render element' => 'form',
+      'arguments' => array('form' => NULL),
+    ),
+  );
+}
+
+function theme_akcii_list_form_theme_function($form) 
+{
+	$output = NULL;
+	$output .= '<table>';
+	$output .= '<thead><tr>';
+	$output .= '<td>Акция</td>';
+	$output .= '<td>Размер скидки</td>';
+	$output .= '<td>Дата окончания</td>';
+	$output .= '<td>Текст акции</td>';
+	$output .= '</tr></thead>';
+	//debug($form['form']['title']['akcii_discount_50']);
+	$flags = flag_get_flags();
+	foreach ($form['form']['flag'] as $key)
+	{
+		if (isset($key['#value']))
+			if (strpos($key['#value'], 'akcii') !== false)
+			{
+				//$link = array('title' => drupal_render($form['form']['title'][$key['#markup']]), 'href' => '/admin/store/akcii/'.$form['form']['title'][$key['#markup']].'/edit');
+				//debug($key['#markup']);
+				//$flagname = $key['#value'];
+				$output .= '<td>' . drupal_render($form['form'][$key['#value'].'title']) . '</td>';
+				$output .= '<td>' . drupal_render($form['form'][$key['#value'].'value']) . '</td>';
+				$output .= '<td>' . drupal_render($form['form'][$key['#value'].'expired']) . '</td>';
+				$output .= '<td>' . drupal_render($form['form'][$key['#value'].'discount_text']) . '</td>';
+				$output .= '</tr>';
+			}
+	}
+	$output .= '</table>'; 
+	$output .= drupal_render_children($form['form']);
+	return $output;
+}
+
+function akcii_list_form_submit($form, &$form_state)
+{
+	//debug($form_state['values']);
+	foreach($form_state['complete form']['flag'] as $flag)
+	{
+		if (isset($flag['#value']))
+		{
+			//debug($flag['#value']);
+			if ($form_state['values'][$flag['#value'].'discount_text'])
+				variable_set($flag['#value'].'_text', $form_state['values'][$flag['#value'].'discount_text']);
+			if ($form_state['values'][$flag['#value'].'value'])
+				variable_set($flag['#value'], $form_state['values'][$flag['#value'].'value']);
+		}
+	}
+}

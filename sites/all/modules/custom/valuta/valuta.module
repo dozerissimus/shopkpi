@@ -1,0 +1,78 @@
+<?php
+/**
+ * Implements hook_menu().
+ */
+function valuta_menu()
+{
+	$items['admin/store/settings/valuta'] = array(
+		'title' => 'Настройка курса валюты',
+		'description' => 'Настройка курса валюты',
+		'position' => -5,
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array('currency_settings_form'),
+		'access callback' => 'user_access',
+		'access arguments' => array('administer flags'),
+		'type' => MENU_NORMAL_ITEM,
+	);
+	return $items;
+}
+
+function currency_settings_form($form, &$form_state) 
+{
+	$form = array();
+	$form['current_currency'] = array(
+		'#type' => 'item',
+		'#title' => t('Текущий курс'),
+		'#markup' => variable_get('currency'),
+	);
+	$form['new_currency'] = array(
+		'#type' => 'textfield',
+		'#title' => t('Новый курс'),
+	);
+	$form['submit'] = array(
+		'#type' => 'submit',
+		'#value' => t('Сохранить настройки'),
+	);
+	return $form;
+}
+
+function currency_settings_form_submit(&$form, &$form_state)
+{
+	$course = $form_state['input']['new_currency'];
+	if (is_numeric($course))
+		variable_set('currency', $course);
+	if ($course)
+		db_query("UPDATE tbl_uc_products, tbl_field_data_field_valuteprice 
+					SET tbl_uc_products.sell_price = tbl_field_data_field_valuteprice.field_valuteprice_value * $course 
+					WHERE tbl_field_data_field_valuteprice.entity_id = tbl_uc_products.nid");
+	drupal_set_message('Настройки сохранены');
+	drupal_set_message('Цены пересчитаны согласно новому курсу');
+}
+
+/* hook node */
+
+function valuta_node_presave($node) 
+{
+    set_currency_price($node);
+}
+
+function set_currency_price(&$node)
+{
+	if (isset($node->field_valuteprice)) 
+    {
+		if ($node->field_valuteprice['und'][0]['value'])
+		{
+			$vc = variable_get('currency');
+			if ($vc) 
+			{
+				$node->cost_price = $node->field_valuteprice;
+				$node->sell_price = round(($node->field_valuteprice['und'][0]['value'] + 0) * $vc, 2);
+				drupal_set_message('Цена пересчитана по текущему курсу валюты.');
+			} 
+			else 
+				drupal_set_message('Не могу определить текущий курс валюты.');
+		}
+	}
+}
+
+

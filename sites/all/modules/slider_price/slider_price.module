@@ -1,0 +1,11 @@
+<?php
+/**
+*Implements hook_form_views_exposed-form_alter
+*/
+	function slider_price_form_views_exposed_form_alter(&$form, $form_state){
+	if($form['#id'] == 'views-exposed-form-price-param-page'){
+		$form['#attached']['library'][] = array('system', 'ui.slider');
+		drupal_add_css(drupal_get_path('module', 'slider_price').'/css/slider_price.css');
+		drupal_add_js(drupal_get_path('module', 'slider_price').'/js/slider_price.js');
+		}
+	}

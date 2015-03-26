@@ -1,0 +1,8 @@
+name = Akcii
+description = Акции и распродажи
+core = 7.x
+version = 7.x-1.0
+package = Custom
+dependencies[] = variable
+dependencies[] = uc_store
+dependencies[] = flag

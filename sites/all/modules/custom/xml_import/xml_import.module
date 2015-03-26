@@ -1,0 +1,270 @@
+<?php
+/**
+ * Implements hook_menu().
+ */
+function xml_import_menu()
+{
+    $items['admin/store/xmlimport'] = array(
+		'title' => 'xml_import',
+		'description' => 'xml_import',
+		'position' => -5,
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array('xml_import_form'),
+		'access callback' => 'user_access',
+		'access arguments' => array('administer flags'),
+		'type' => MENU_NORMAL_ITEM,
+    );
+    return $items;
+}
+
+function xml_import_form($form, &$form_state)
+{
+    $active = array('uk' => t('Ukr'), 'ru' => t('Rus'));
+    $form = array();
+    $form['xmlfile'] = array(
+        '#name' => 'files[xmlfile]',
+        '#type' => 'file',
+        '#title' => t('Choose a XML file'),
+    );
+    $form['lang'] = array(
+        '#type' => 'radios',
+        '#title' => t('XML Language'),
+        '#default_value' => 'uk',
+        '#options' => $active,
+    );
+    $form['submit_categories'] = array(
+    	'#type' => 'submit',
+		'#value' => t('Импортировать категории'),
+    );
+    $form['submit_products'] = array(
+		'#type' => 'submit',
+		'#value' => t('Импортировать товары'),
+    );
+    return $form;	
+}
+
+function xml_import_form_validate($form, &$form_state)
+{
+    if (isset($form['xmlfile'])) 
+    {
+        //валидация на расширение файла
+        $validators = array('file_validate_extensions' => array('xml'));
+ 
+        //папка, куда будет загружаться файл
+        $dir = 'public://import';
+        //$dir = '/var/www/html/shop/'.variable_get('file_public_path', conf_path() . '/files').'/import';
+        //загружаем файл
+        $file = file_save_upload('xmlfile', $validators, $dir);
+        //добавляем в $form_state новое поле с файлом
+        if ($file) 
+            $form_state['values']['xmlfile'] = $file;
+    }
+}
+
+function xml_import_form_submit($form, &$form_state) 
+{
+    //$voc = taxonomy_vocabulary_machine_name_load('categories');
+    //delete_vocab_terms($voc->vid);
+    if ($form_state['clicked_button']['#id'] == 'edit-submit-categories') 
+    {       
+        categories_submit($form_state['input']['lang'], $form_state['values']['xmlfile']);
+    }
+    else if ($form_state['clicked_button']['#id'] == 'edit-submit-products') 
+    {
+		products_submit($form_state['input']['lang'], $form_state['values']['xmlfile']);
+    }
+}
+
+function categories_submit($lang, $file)
+{
+    $voc = taxonomy_vocabulary_machine_name_load('categories');
+    $file = explode('public://import/', $file->uri);
+    $file = $file[1];
+    $xml1 = simplexml_load_file(variable_get('file_public_path', conf_path() . '/files').'/import/'.$file);
+
+    foreach ($xml1->categories as $category)
+    {
+		foreach ($category as $maincat)
+		{
+            $name = str_replace("'", "\'", $maincat['name']);
+            $res = db_query("SELECT id FROM {xml_import_category} WHERE id = '".$maincat['id']."' AND lang = '".$lang."'")->fetchField();
+            if (!$res)
+            {
+                $maincat_tid = '';
+                $term = array(
+                    'name' => $maincat['name'],
+                    'vid' => $voc->vid,
+                    'language' => $lang,
+                );
+                $term = (object) $term;
+                taxonomy_term_save($term);
+                $maincat_tid = $term->tid;
+                db_query("INSERT into {xml_import_category} (id, par, cat, tid, lang) VALUES ('".$maincat['id']."', '".$category['id']."', '".$name."', '".$maincat_tid."', '".$lang."')");
+            }
+            foreach ($maincat as $subcat)
+            {
+				$name = str_replace("'", "\'", $subcat['name']);
+                $res = db_query("SELECT id FROM {xml_import_category} WHERE id = '".$subcat['id']."' AND lang = '".$lang."'")->fetchField();
+                if (!$res)
+                {
+                    $subcat_tid = '';
+                    if ($maincat_tid)
+                        $term = array(
+                            'name' => $subcat['name'],
+                            'vid' => $voc->vid,
+                            'parent' => $maincat_tid,
+                            'language' => $lang,
+                        );
+                    else
+                        $term = array(
+                            'name' => $subcat['name'],
+                            'vid' => $voc->vid,
+                            'language' => $lang,
+                        );
+                    $term = (object) $term;
+                    taxonomy_term_save($term);
+                    $subcat_tid = $term->tid;
+                    db_query("INSERT into {xml_import_category} (id, par, cat, tid, par_tid, lang) VALUES ('".$subcat['id']."', '".$maincat['id']."', '".$name."', '".$subcat_tid."', '".$maincat_tid."', '".$lang."')");
+                }
+                foreach ($subcat as $sub)
+				{
+                    $name = str_replace("'", "\'", $sub['name']);
+                    $res = db_query("SELECT id FROM {xml_import_category} WHERE id = '".$sub['id']."' AND lang = '".$lang."'")->fetchField();
+                    if (!$res)
+                    {
+                        $sub_tid = '';
+                        if ($subcat_tid)
+                            $term = array(
+                                'name' => $sub['name'],
+                                'vid' => $voc->vid,
+                                'parent' => $subcat_tid,
+                                'language' => $lang,
+                            );
+                        else
+                            $term = array(
+                                'name' => $sub['name'],
+                                'vid' => $voc->vid,
+                                'language' => $lang,
+                            );
+                        $term = (object) $term;
+                        taxonomy_term_save($term);
+                        $sub_tid = $term->tid;
+                        db_query("INSERT into {xml_import_category} (id, par, cat, tid, par_tid, lang) VALUES ('".$sub['id']."', '".$subcat['id']."', '".$name."', '".$sub_tid."', '".$subcat_tid."', '".$lang."')");
+                    }
+                    foreach ($sub as $subsub)
+                    {
+						$name = str_replace("'", "\'", $subsub['name']);
+                        $res = db_query("SELECT id FROM {xml_import_category} WHERE id = '".$subsub['id']."' AND lang = '".$lang."'")->fetchField();
+                        if (!$res)
+                        {
+                            $subsub_tid = '';
+                            if ($sub_tid)
+                                $term = array(
+                                    'name' => $subsub['name'],
+                                    'vid' => $voc->vid,
+                                    'parent' => $sub_tid,
+                                    'language' => $lang,
+                                );
+                            else
+                                $term = array(
+                                    'name' => $subsub['name'],
+                                    'vid' => $voc->vid,
+                                    'language' => $lang,
+                                );
+                            $term = (object) $term;
+                            taxonomy_term_save($term);
+                            $subsub_tid = $term->tid;
+                            db_query("INSERT into {xml_import_category} (id, par, cat, tid, par_tid, lang) VALUES ('".$subsub['id']."', '".$sub['id']."', '".$name."', '".$subsub_tid."', '".$sub_tid."', '".$lang."')");
+                        }
+                    }
+				}
+            }
+		}
+    }
+    drupal_set_message('Импорт категорий завершен');
+}
+
+function products_submit($lang, $file)
+{
+    $file = explode('public://import/', $file->uri);
+    $file = $file[1];
+    $xml1 = simplexml_load_file(variable_get('file_public_path', conf_path() . '/files').'/import/'.$file);
+    foreach ($xml1->products as $products)
+    {
+	foreach ($products as $product)
+	{
+            $nid = db_query("SELECT entity_id FROM {field_data_field_code} WHERE field_code_value = '".$product['Code']."'")->fetchField();
+            if ($nid)
+            {
+                $valuteprice = db_query("SELECT field_valuteprice_value FROM {field_data_field_valuteprice} WHERE entity_id = '".$nid."'")->fetchField();
+                if ($valuteprice)
+                    if ($valuteprice != $product['PriceUSD'])
+                        updateProduct($product, $nid);          
+            }
+            else
+            {
+               createProduct($product, $lang);
+            }
+	}
+    }
+    drupal_set_message('Импорт товаров завершен');
+}
+
+function delete_vocab_terms($vid)  
+{
+    $terms = taxonomy_get_tree((int) $vid);
+    foreach ($terms as $term) 
+    {
+		taxonomy_term_delete($term->tid);
+    }
+}
+
+function updateProduct($product, $nid)
+{
+    $node = node_load($nid);
+    $node->field_valuteprice['und'][0]['value'] = (float)$product['PriceUSD'];
+    node_save($node);
+}
+
+function createProduct($product, $lang)
+{
+    /*$page = file_get_contents($product['URL']);
+    debug($page);*/
+    $node = new stdClass(); // Создаем объект node
+    $node->type = "product"; // Определяем тип создаваемого материала
+    node_object_prepare($node); // добавляем настройки по-умолчанию
+
+    $node->title = $product['Name']; // Название материала
+    $node->language = $lang; // Или например 'ru', если включен модуль locale
+
+    $node->uid = 1; // UID пользователя
+
+    // Заполнение поля body
+    $bodytext = $product['Description'];
+    $node->body['und'][0]['value'] = $bodytext;
+    $node->body['und'][0]['summary'] = text_summary($bodytext);
+    $node->body['und'][0]['format']  = 'filtered_html';
+
+    //$node->path = array('alias' => 'path_to_this_node'); // путь к материалу, для модуля path
+
+    // Дополнительные  свойства ноды
+    $node->status = 1; // Опуликовано (1) или нет (0)
+    $node->promote = 0; // Размещено на главной  (1) или нет (0)
+    $node->sticky = 0; // Закреплено вверху списков  (1) или нет (0)
+    $node->comment = 2; // Комментарии включены  (2) или нет (1)
+
+    $node->field_code['und'][0]['value'] = $product['Code'];
+    $node->field_article['und'][0]['value'] = $product['Article'];
+    $node->field_vendor['und'][0]['value'] = $product['Vendor'];
+    $node->field_model['und'][0]['value'] = $product['Model'];
+    $node->field_warranty['und'][0]['value'] = (int)$product['Warranty'];
+    $node->field_valuteprice['und'][0]['value'] = (float)$product['PriceUSD'];
+    $node->field_url['und'][0]['value'] = $product['URL'];
+    $cat = db_query("SELECT tid FROM {xml_import_category} WHERE id = '".$product['CategoryID']."'")->fetchObject();
+    $node->field_category['und'][]['tid'] = $cat->tid;
+    //debug($node);
+    if($node = node_submit($node)) 
+    { // Подготовка к сохранению
+        node_save($node); // Сохранение ноды, теперь доступен nid новой ноды $node->nid
+    }
+}

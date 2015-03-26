@@ -1,0 +1,204 @@
+<?php
+/**
+ * Реализация hook_block_info()
+ */
+function shopkpi_block_info() 
+{
+	$blocks['shopkpi_userbar_block'] = array(
+		'info' => t('Блок тематизации юзербара'),
+	); 
+	return $blocks;
+}
+
+/**
+ * Реализация hook_block_view()
+ */
+function shopkpi_block_view($delta = false) 
+{
+	$block = array();
+	switch ($delta) 
+	{
+		case 'shopkpi_userbar_block':
+		{
+			$block['content'] = userbar_content();
+			break;
+		}
+  }
+  return $block;
+}
+
+function userbar_content()
+{
+	global $user;
+	global $language;
+	
+	switch ($language->language)
+	{
+		case 'uk':
+		{
+			$output_login = 'Зайти на сайт';
+			$output_compare = 'Порівняння';
+			$output_cart = 'Кошик';
+			$output_settings = 'Налаштування';
+			$output_favorite = 'Обране';
+			$output_logout = 'Вийти';
+			break;
+		}
+		case 'ru':
+		{
+			$output_login = 'Войти на сайт';
+			$output_compare = 'Сравнение';
+			$output_cart = 'Корзина';
+			$output_settings = 'Настройки';
+			$output_favorite = 'Избранное';
+			$output_logout = 'Выйти';
+			break;
+		}
+	}
+	
+	$output = '';
+	if ($user->uid == 0)
+		$output .= '
+			<table class="userbar-table">
+				<tr>
+					<td class="userbar">
+						<a href="?q=user">
+							<img id="img_login" src="sites/default/files/source/login.png">
+							<div style="clear:both">'.$output_login.'</div>
+						</a>
+					</td>
+					<td class="userbar">
+						<a href="?q=compare">
+							<img id="img_login" src="sites/default/files/source/compare.png">
+							<div style="clear:both">'.$output_compare.'</div>
+						</a>
+					</td>
+					<td class="userbar">
+						<a href="?q=cart">
+							<img id="img_login" src="sites/default/files/source/cart.png">
+							<div style="clear:both">'.$output_cart.'</div>
+						</a>
+					</td>
+				</tr>
+			</table>
+		';
+	else
+		$output .= '
+			<table class="userbar-table">
+				<tr>
+					<td class="userbar">
+						<a href="?q=user/logout">
+							<img id="img_login" src="sites/default/files/source/logout.png">
+							<div style="clear:both">'.$output_logout.'</div>
+						</a>
+					</td>
+					<td class="userbar">
+						<a href="?q=user/'.$user->uid.'/edit">
+							<img id="img_login" src="sites/default/files/source/settings1.png">
+							<div style="clear:both">'.$output_settings.'</div>
+						</a>
+					</td>
+					<td class="userbar">
+						<a href="?q=favorite">
+							<img id="img_login" src="sites/default/files/source/favorite1.png">
+							<div style="clear:both">'.$output_favorite.'</div>
+						</a>
+					</td>
+					<td class="userbar">
+						<a href="?q=compare">
+							<img id="img_login" src="sites/default/files/source/compare.png">
+							<div style="clear:both">'.$output_compare.'</div>
+						</a>
+					</td>
+					<td class="userbar">
+						<a href="?q=cart">
+							<img id="img_login" src="sites/default/files/source/cart.png">
+							<div style="clear:both">'.$output_cart.'</div>
+						</a>
+					</td>
+				</tr>
+			</table>
+		';
+	
+	return $output;
+}
+
+/**
+ * Implements hook_token_info().
+ */
+/*function shopkpi_token_info() 
+{
+  // Создаём новый токен с паролем и добавляем его в группу пользователей.
+	$info['tokens']['user']['flag_favorite'] = array(
+		'name' => t('Text flag favorite'),
+	);
+	$info['tokens']['user']['flag_compare'] = array(
+		'name' => t('Text flag compare'),
+	);
+	$info['tokens']['user']['unflag_favorite'] = array(
+		'name' => t('Text unflag favorite'),
+	);
+	$info['tokens']['user']['unflag_compare'] = array(
+		'name' => t('Text unflag compare'),
+	);
+ 
+	return $info;
+}
+
+
+
+/**
+ * Implements hook_tokens().
+ */
+/*function shopkpi_tokens($type, $tokens, array $data = array(), array $options = array()) 
+{
+	global $language;
+	switch ($language->language)
+      {
+		case 'uk': 
+		{
+			$flag_favorite_text = 'До обраного'; 
+			$unflag_favorite_text = 'З обраного';
+			$flag_compare_text = 'До порівняння';
+			$unflag_compare_text = 'З порівняння';
+			break;
+		}
+		case 'ru': 
+		{
+			$flag_favorite_text = 'В избранное';
+			$unflag_favorite_text = 'Из избранного'; 
+			$flag_compare_text = 'Сравнить';
+			$unflag_compare_text = 'Убрать из сравнения';
+			break;
+		}
+	  }
+	$replacements = array();
+	/*foreach ($tokens as $name) 
+	{
+		switch ($name)
+		{
+			case 'flag_favorite':
+			{
+				$replacements['user:favorite_flag'] = $flag_favorite_text;
+				break;
+			}
+			case 'unflag_favorite':
+			{
+				$replacements['user:favorite_unflag'] = $unflag_favorite_text;
+				break;
+			}
+			case 'flag_compare':
+			{
+				$replacements['user:compare_flag'] = $flag_compare_text;
+				break;
+			}
+			case 'unflag_compare':
+			{
+				$replacements['user:compare_unflag'] = $unflag_compare_text;
+				break;
+			}
+		}
+    }   
+	return $replacements;
+}*/
+
