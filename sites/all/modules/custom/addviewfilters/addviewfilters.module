@@ -115,7 +115,6 @@ function add_filters_content()
                 $term_id = $_SESSION['tid'];
         if (isset($term_id))
             $term = taxonomy_term_load($term_id);
-	//debug($term);
 	if (isset($term->field_type['und']))
 	{
             $term_type = $term->field_type['und'][0]['value'];
